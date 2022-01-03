@@ -748,10 +748,6 @@ func process() error {
 		if err := ioutil.WriteFile(outFile, parsedJson, 0644); err != nil {
 			return err
 		}
-		// tmp
-		if err := ioutil.WriteFile("output-graphql.json", parsedJson, 0644); err != nil {
-			return err
-		}
 	}
 
 	return nil
