@@ -1,4 +1,4 @@
-module github.com/s-you/spanner-schema-json
+module github.com/s-you/graphql-schema-json
 
 go 1.16
 
