@@ -52,9 +52,6 @@ type Named struct {
 	Name *Name  `json:"name"`
 }
 
-//func (t *Named) GetKind() string {
-//	return t.Kind
-//}
 func (t *Named) GetKind() string {
 	return t.Kind
 }
@@ -90,7 +87,7 @@ type MyTypeImpl struct {
 
 func (m MyTypeImpl) String() string {
 	goType := m.Name
-	if !m.NotNull { // || (goType[0] >= 'A' && goType[0] <= 'Z')
+	if !m.NotNull {
 		goType = "*" + goType
 	}
 	if m.IsArray {
@@ -118,7 +115,7 @@ type FieldDefinition struct {
 	Description   *StringValue                      `json:"-"`
 	Type          MyType                            `json:"-"`
 	GoType        *MyTypeImpl                       `json:"Type"`
-	BaseType      string                            `json:"BaseType"`
+	BaseType      string                            `json:"baseType"`
 	TypeDb        string                            `json:"typeDb"`
 	IsArray       bool                              `json:"isArray"`
 	NotNull       bool                              `json:"notNull"`
@@ -147,7 +144,7 @@ type InputValueDefinition struct {
 	Description   *StringValue                      `json:"-"`
 	Type          MyType                            `json:"-"`
 	GoType        *MyTypeImpl                       `json:"Type"`
-	BaseType      string                            `json:"BaseType"`
+	BaseType      string                            `json:"baseType"`
 	TypeDb        string                            `json:"typeDb"`
 	IsArray       bool                              `json:"isArray"`
 	NotNull       bool                              `json:"notNull"`
@@ -233,7 +230,6 @@ func (v *ListValue) GetKind() string {
 	return v.Kind
 }
 
-// GetValue alias to ListValue.GetValues()
 func (v *ListValue) GetValue() interface{} {
 	return v.GetValues()
 }
@@ -251,7 +247,6 @@ func (v *ObjectValue) GetKind() string {
 	return v.Kind
 }
 func (v *ObjectValue) GetValue() interface{} {
-	// TODO: verify ObjectValue.GetValue()
 	return v.Fields
 }
 
@@ -302,7 +297,6 @@ type EnumDefinition struct {
 	NameExact     string `json:"NameExact"`
 	NameExactJson string `json:"nameExact"`
 
-	//Description *StringValue
 	Kind       string                 `json:"kind"`
 	Directives []*Directive           `json:"-"`
 	Values     []*EnumValueDefinition `json:"fields"`
@@ -319,15 +313,7 @@ type EnumValueDefinition struct {
 	NameExactJson string      `json:"nameExact"`
 	GoType        *MyTypeImpl `json:"Type"`
 	Key           string      `json:"key"`
-
-	//Description *StringValue
-	//Kind       string
-	//Directives []*Directive
 }
-
-//func (o EnumValueDefinition) GetNodeKind() string {
-//	return o.Kind
-//}
 
 type ObjectDefinition struct {
 	Name   *Name  `json:"-"`
@@ -389,9 +375,6 @@ type List struct {
 	Type MyType `json:"type"`
 }
 
-//func (t *List) GetKind() string {
-//	return t.Kind
-//}
 func (t *List) GetKind() string {
 	return t.Kind
 }
@@ -404,9 +387,6 @@ type NonNull struct {
 	Type MyType
 }
 
-//func (t *NonNull) GetKind() string {
-//	return t.Kind
-//}
 func (t *NonNull) GetKind() string {
 	return t.Kind
 }
@@ -424,7 +404,6 @@ func parseSchema(b []byte) (*ast.Document, error) {
 			NoSource:   true,
 		},
 	})
-	//fmt.Printf("%+v\n", _ast)
 	return _ast, err
 }
 
@@ -443,15 +422,7 @@ func convert(nodes []ast.Node) ([]Node, error) {
 	onodes := make([]Node, 0, len(nodes))
 	for _, n := range nodes {
 		switch v := n.(type) {
-		//case *ast.ScalarDefinition:
-		//	o := &ScalarDefinition{}
-		//	if err := copier.Copy(o, v); err != nil {
-		//		return nil, err
-		//	}
-		//	onodes = append(onodes, o)
 		case *ast.EnumDefinition:
-			//fmt.Printf("%+v\n", v)
-			//pp.Println(v)
 			o := &EnumDefinition{}
 			o.Kind = v.Kind
 			o.Key = snaker.ForceCamelIdentifier(v.Name.Value)
@@ -481,7 +452,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 			o.Key = snaker.ForceCamelIdentifier(v.Name.Value)
 			o.NameInput = v.Name.Value
 			o.GoName = strings.TrimPrefix(v.Name.Value, "Input")
-			//o.GoName = v.Name.Value
 			o.NameExactJson = v.Name.Value
 			o.NameExact = snaker.ForceCamelIdentifier(o.NameExactJson)
 			o.NameDb = snaker.CamelToSnake(inflection.Singular(o.GoName))
@@ -531,19 +501,11 @@ func convert(nodes []ast.Node) ([]Node, error) {
 					m.GoVarNames = m.GoVarNames[:len(m.GoVarNames)-2] + "ds"
 				}
 				m.GoShortName = shortName(m.GoName)
-
-				//if m.GoName == "EntryType" {
-				//	fmt.Println(m.Type, m.GoType)
-				//	pp.Println(m)
-				//}
 				m.GoType = &MyTypeImpl{}
 				getGoType(m.Type, m.GoType)
 				m.BaseType = m.GoType.Name
 				m.IsArray = m.GoType.IsArray
 				m.NotNull = m.GoType.NotNull
-				//if m.GoName == "EntryType" {
-				//	fmt.Println(m.NotNull, m.GoType.NotNull, m.GoType.String())
-				//}
 				m.TypeDb = snaker.CamelToSnake(m.GoType.Name)
 			}
 			onodes = append(onodes, o)
@@ -575,7 +537,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 				}
 			}
 
-			//fmt.Printf("%+v\n", v)
 			if err := copier.Copy(o, v); err != nil {
 				return nil, err
 			}
@@ -674,15 +635,12 @@ func convert(nodes []ast.Node) ([]Node, error) {
 func getGoType(m MyType, typ *MyTypeImpl) {
 	switch w := m.(type) {
 	case *ast.NonNull:
-		//fmt.Printf("nonNull: %+v\n", w)
 		typ.NotNull = true
 		getGoType(w.Type, typ)
 	case *ast.Named:
-		//fmt.Printf("Named: %+v\n", w)
 		typ.Name = convertGoType(w.Name.Value)
 	case *ast.List:
 		typ.IsArray = true
-		//fmt.Printf("List: %+v\n", w)
 		getGoType(w.Type, typ)
 	}
 }
