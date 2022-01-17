@@ -548,7 +548,7 @@ func convert(nodes []ast.Node) ([]Node, error) {
 				m.NameExact = snaker.ForceCamelIdentifier(m.NameExactJson)
 				m.NameJson = lowerCamel(inflection.Singular(m.Name.Value))
 				if o.Key == "Query" || o.Key == "Mutation" {
-					m.Key = m.NameExact
+					m.Key = m.NameExactJson
 				} else {
 					m.Key = m.NameJson
 				}
