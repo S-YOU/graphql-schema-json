@@ -297,9 +297,10 @@ type EnumDefinition struct {
 	NameExact     string `json:"NameExact"`
 	NameExactJson string `json:"nameExact"`
 
-	Kind       string                 `json:"kind"`
-	Directives []*Directive           `json:"-"`
-	Values     []*EnumValueDefinition `json:"fields"`
+	Kind         string                            `json:"kind"`
+	Directives   []*Directive                      `json:"-"`
+	Values       []*EnumValueDefinition            `json:"fields"`
+	MyDirectives map[string]map[string]interface{} `json:"directives,omitempty"`
 }
 
 func (o EnumDefinition) GetNodeKind() string {
@@ -444,6 +445,15 @@ func convert(nodes []ast.Node) ([]Node, error) {
 				x.GoName = snaker.ForceCamelIdentifier(strings.ToLower(x.NameExactJson))
 				x.Key = x.NameExactJson
 				o.Values[i] = x
+			}
+			o.MyDirectives = make(map[string]map[string]interface{}, len(v.Directives))
+			for _, d := range v.Directives {
+				if _, ok := o.MyDirectives[d.Name.Value]; !ok {
+					o.MyDirectives[d.Name.Value] = make(map[string]interface{}, len(d.Arguments))
+				}
+				for _, a := range d.Arguments {
+					o.MyDirectives[d.Name.Value][a.Name.Value] = a.Value.GetValue()
+				}
 			}
 			onodes = append(onodes, o)
 		case *ast.InputObjectDefinition:
