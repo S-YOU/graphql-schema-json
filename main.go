@@ -62,7 +62,7 @@ func (t *Named) String() string {
 type Directive struct {
 	Kind      string      `json:"kind"`
 	Name      *Name       `json:"name"`
-	Arguments []*Argument `json:"arguments"`
+	Arguments []*Argument `json:"args"`
 }
 
 func (t *Directive) GetKind() string {
@@ -119,7 +119,7 @@ type FieldDefinition struct {
 	TypeDb        string                            `json:"typeDb"`
 	IsArray       bool                              `json:"isArray"`
 	NotNull       bool                              `json:"notNull"`
-	Arguments     []*InputValueDefinition           `json:"arguments,omitempty"`
+	Arguments     []*InputValueDefinition           `json:"args,omitempty"`
 	MyDirectives  map[string]map[string]interface{} `json:"directives,omitempty"`
 	Key           string                            `json:"key"`
 }
