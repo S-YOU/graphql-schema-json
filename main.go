@@ -23,6 +23,7 @@ import (
 
 var (
 	schemaFile = flag.String("schema", "", "input schema file")
+	kind       = flag.String("kind", "gql", "override kind")
 	out        = flag.String("o", "", "output file")
 )
 
@@ -177,7 +178,6 @@ type IntValue struct {
 func (v *IntValue) GetKind() string {
 	return v.Kind
 }
-
 func (v *IntValue) GetValue() interface{} {
 	return v.Value
 }
@@ -190,7 +190,6 @@ type FloatValue struct {
 func (v *FloatValue) GetKind() string {
 	return v.Kind
 }
-
 func (v *FloatValue) GetValue() interface{} {
 	return v.Value
 }
@@ -203,7 +202,6 @@ type BooleanValue struct {
 func (v *BooleanValue) GetKind() string {
 	return v.Kind
 }
-
 func (v *BooleanValue) GetValue() interface{} {
 	return v.Value
 }
@@ -216,7 +214,6 @@ type EnumValue struct {
 func (v *EnumValue) GetKind() string {
 	return v.Kind
 }
-
 func (v *EnumValue) GetValue() interface{} {
 	return v.Value
 }
@@ -229,11 +226,9 @@ type ListValue struct {
 func (v *ListValue) GetKind() string {
 	return v.Kind
 }
-
 func (v *ListValue) GetValue() interface{} {
 	return v.GetValues()
 }
-
 func (v *ListValue) GetValues() interface{} {
 	return v.Values
 }
@@ -259,7 +254,6 @@ type ObjectField struct {
 func (f *ObjectField) GetKind() string {
 	return f.Kind
 }
-
 func (f *ObjectField) GetValue() interface{} {
 	return f.Value
 }
@@ -284,23 +278,21 @@ func (o ScalarDefinition) GetNodeKind() string {
 }
 
 type EnumDefinition struct {
-	Name   *Name  `json:"-"`
-	GoName string `json:"Name"`
-	Key    string `json:"key"`
-
-	GoVarName     string `json:"name"`
-	GoNames       string `json:"Names"`
-	GoVarNames    string `json:"names"`
-	GoShortName   string `json:"n"`
-	NameDb        string `json:"nameDb"`
-	NamesDb       string `json:"namesDb"`
-	NameExact     string `json:"NameExact"`
-	NameExactJson string `json:"nameExact"`
-
-	Kind         string                            `json:"kind"`
-	Directives   []*Directive                      `json:"-"`
-	Values       []*EnumValueDefinition            `json:"fields"`
-	MyDirectives map[string]map[string]interface{} `json:"directives,omitempty"`
+	Name          *Name                             `json:"-"`
+	GoName        string                            `json:"Name"`
+	Key           string                            `json:"key"`
+	GoVarName     string                            `json:"name"`
+	GoNames       string                            `json:"Names"`
+	GoVarNames    string                            `json:"names"`
+	GoShortName   string                            `json:"n"`
+	NameDb        string                            `json:"nameDb"`
+	NamesDb       string                            `json:"namesDb"`
+	NameExact     string                            `json:"NameExact"`
+	NameExactJson string                            `json:"nameExact"`
+	Kind          string                            `json:"kind"`
+	Directives    []*Directive                      `json:"-"`
+	Values        []*EnumValueDefinition            `json:"fields"`
+	MyDirectives  map[string]map[string]interface{} `json:"directives,omitempty"`
 }
 
 func (o EnumDefinition) GetNodeKind() string {
@@ -308,34 +300,30 @@ func (o EnumDefinition) GetNodeKind() string {
 }
 
 type EnumValueDefinition struct {
-	Name   *Name  `json:"-"`
-	GoName string `json:"Name"`
-
+	Name          *Name       `json:"-"`
+	GoName        string      `json:"Name"`
 	NameExactJson string      `json:"nameExact"`
 	GoType        *MyTypeImpl `json:"Type"`
 	Key           string      `json:"key"`
 }
-
 type ObjectDefinition struct {
-	Name   *Name  `json:"-"`
-	GoName string `json:"Name"`
-	Key    string `json:"key"`
-
-	GoVarName     string `json:"name"`
-	GoNames       string `json:"Names"`
-	GoVarNames    string `json:"names"`
-	GoShortName   string `json:"n"`
-	NameDb        string `json:"nameDb"`
-	NamesDb       string `json:"namesDb"`
-	NameExact     string `json:"NameExact"`
-	NameExactJson string `json:"nameExact"`
-	Comment       string `json:"comment"`
-
-	Kind         string                            `json:"kind"`
-	Description  *StringValue                      `json:"-"`
-	Interfaces   []*Named                          `json:"-"`
-	MyDirectives map[string]map[string]interface{} `json:"directives,omitempty"`
-	Fields       []*FieldDefinition                `json:"fields"`
+	Name          *Name                             `json:"-"`
+	GoName        string                            `json:"Name"`
+	Key           string                            `json:"key"`
+	GoVarName     string                            `json:"name"`
+	GoNames       string                            `json:"Names"`
+	GoVarNames    string                            `json:"names"`
+	GoShortName   string                            `json:"n"`
+	NameDb        string                            `json:"nameDb"`
+	NamesDb       string                            `json:"namesDb"`
+	NameExact     string                            `json:"NameExact"`
+	NameExactJson string                            `json:"nameExact"`
+	Comment       string                            `json:"comment"`
+	Kind          string                            `json:"kind"`
+	Description   *StringValue                      `json:"-"`
+	Interfaces    []*Named                          `json:"-"`
+	MyDirectives  map[string]map[string]interface{} `json:"directives,omitempty"`
+	Fields        []*FieldDefinition                `json:"fields"`
 }
 
 func (o ObjectDefinition) GetNodeKind() string {
@@ -343,25 +331,23 @@ func (o ObjectDefinition) GetNodeKind() string {
 }
 
 type InputObjectDefinition struct {
-	Name   *Name  `json:"-"`
-	GoName string `json:"Name"`
-	Key    string `json:"key"`
-
-	GoVarName     string `json:"name"`
-	GoNames       string `json:"Names"`
-	GoVarNames    string `json:"names"`
-	GoShortName   string `json:"n"`
-	NameDb        string `json:"nameDb"`
-	NamesDb       string `json:"namesDb"`
-	NameExact     string `json:"NameExact"`
-	NameExactJson string `json:"nameExact"`
-	NameInput     string `json:"NameInput"`
-	Comment       string `json:"comment"`
-
-	Kind         string                            `json:"kind"`
-	Description  *StringValue                      `json:"-"`
-	MyDirectives map[string]map[string]interface{} `json:"directives,omitempty"`
-	Fields       []*InputValueDefinition           `json:"fields"`
+	Name          *Name                             `json:"-"`
+	GoName        string                            `json:"Name"`
+	Key           string                            `json:"key"`
+	GoVarName     string                            `json:"name"`
+	GoNames       string                            `json:"Names"`
+	GoVarNames    string                            `json:"names"`
+	GoShortName   string                            `json:"n"`
+	NameDb        string                            `json:"nameDb"`
+	NamesDb       string                            `json:"namesDb"`
+	NameExact     string                            `json:"NameExact"`
+	NameExactJson string                            `json:"nameExact"`
+	NameInput     string                            `json:"NameInput"`
+	Comment       string                            `json:"comment"`
+	Kind          string                            `json:"kind"`
+	Description   *StringValue                      `json:"-"`
+	MyDirectives  map[string]map[string]interface{} `json:"directives,omitempty"`
+	Fields        []*InputValueDefinition           `json:"fields"`
 }
 
 func (o InputObjectDefinition) GetNodeKind() string {
@@ -394,7 +380,6 @@ func (t *NonNull) GetKind() string {
 func (t *NonNull) String() string {
 	return t.Kind
 }
-
 func parseSchema(b []byte) (*ast.Document, error) {
 	re := regexp.MustCompile("#[^\n]+\n")
 	b = re.ReplaceAll(b, []byte{})
@@ -407,7 +392,6 @@ func parseSchema(b []byte) (*ast.Document, error) {
 	})
 	return _ast, err
 }
-
 func plural(s string) string {
 	out := inflection.Plural(s)
 	if out == "information" {
@@ -417,11 +401,13 @@ func plural(s string) string {
 	}
 	return out
 }
-
 func convert(nodes []ast.Node) ([]Node, error) {
 	warning := color.New(color.FgYellow)
 	onodes := make([]Node, 0, len(nodes))
 	for _, n := range nodes {
+		if v, ok := n.(*ast.TypeExtensionDefinition); ok {
+			n = v.Definition
+		}
 		switch v := n.(type) {
 		case *ast.EnumDefinition:
 			o := &EnumDefinition{}
@@ -473,7 +459,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 			if v.Description != nil {
 				o.Comment = v.Description.Value
 			}
-
 			o.MyDirectives = make(map[string]map[string]interface{}, len(v.Directives))
 			for _, d := range v.Directives {
 				if _, ok := o.MyDirectives[d.Name.Value]; !ok {
@@ -483,7 +468,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 					o.MyDirectives[d.Name.Value][a.Name.Value] = a.Value.GetValue()
 				}
 			}
-
 			if err := copier.Copy(o, v); err != nil {
 				return nil, err
 			}
@@ -493,7 +477,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 				m.NameJson = lowerCamel(inflection.Singular(m.Name.Value))
 				m.Key = m.NameJson
 				m.GoName = snaker.ForceCamelIdentifier(m.NameJson)
-
 				m.NameDb = snaker.CamelToSnake(inflection.Singular(m.GoName))
 				m.NamesDb = plural(m.NameDb)
 				if m.GoName == "ID" {
@@ -524,7 +507,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 			o.Kind = v.Kind
 			o.Key = snaker.ForceCamelIdentifier(v.Name.Value)
 			o.GoName = v.Name.Value
-
 			o.NameExactJson = v.Name.Value
 			o.NameExact = snaker.ForceCamelIdentifier(o.NameExactJson)
 			o.NameDb = snaker.CamelToSnake(inflection.Singular(o.GoName))
@@ -536,7 +518,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 			if v.Description != nil {
 				o.Comment = v.Description.Value
 			}
-
 			o.MyDirectives = make(map[string]map[string]interface{}, len(v.Directives))
 			for _, d := range v.Directives {
 				if _, ok := o.MyDirectives[d.Name.Value]; !ok {
@@ -546,7 +527,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 					o.MyDirectives[d.Name.Value][a.Name.Value] = a.Value.GetValue()
 				}
 			}
-
 			if err := copier.Copy(o, v); err != nil {
 				return nil, err
 			}
@@ -575,7 +555,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 					m.Key = o.GoVarName + "Id"
 				}
 				m.GoName = snaker.ForceCamelIdentifier(m.NameJson)
-
 				m.NameDb = snaker.CamelToSnake(inflection.Singular(m.GoName))
 				m.NamesDb = plural(m.NameDb)
 				if m.GoName == "ID" {
@@ -593,7 +572,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 					m.GoVarNames = m.GoVarNames[:len(m.GoVarNames)-2] + "ds"
 				}
 				m.GoShortName = shortName(m.GoName)
-
 				m.GoType = &MyTypeImpl{}
 				getGoType(m.Type, m.GoType)
 				m.BaseType = m.GoType.Name
@@ -609,7 +587,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 						n.Key = o.GoVarName + "Id"
 					}
 					n.GoName = snaker.ForceCamelIdentifier(n.NameJson)
-
 					n.NameDb = snaker.CamelToSnake(inflection.Singular(n.GoName))
 					n.NamesDb = plural(n.NameDb)
 					if n.GoName == "ID" {
@@ -627,7 +604,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 						n.GoVarNames = n.GoVarNames[:len(n.GoVarNames)-2] + "ds"
 					}
 					n.GoShortName = shortName(n.GoName)
-
 					n.GoType = &MyTypeImpl{}
 					getGoType(n.Type, n.GoType)
 					n.BaseType = n.GoType.Name
@@ -641,7 +617,6 @@ func convert(nodes []ast.Node) ([]Node, error) {
 	}
 	return onodes, nil
 }
-
 func getGoType(m MyType, typ *MyTypeImpl) {
 	switch w := m.(type) {
 	case *ast.NonNull:
@@ -654,7 +629,6 @@ func getGoType(m MyType, typ *MyTypeImpl) {
 		getGoType(w.Type, typ)
 	}
 }
-
 func convertGoType(s string) string {
 	if s == "String" {
 		return "string"
@@ -667,7 +641,6 @@ func convertGoType(s string) string {
 	}
 	return s
 }
-
 func lowerCamel(s string) string {
 	if s == "" {
 		return ""
@@ -684,6 +657,7 @@ func shortName(s string) string {
 
 type FileContent struct {
 	FileKind string `json:"kind"`
+	SrcKind  string `json:"srcKind"`
 	Data     []Node `json:"data"`
 }
 
@@ -701,14 +675,14 @@ func process() error {
 		return err
 	}
 	fileContent := FileContent{
-		FileKind: "gql",
+		FileKind: *kind,
+		SrcKind:  "gql",
 		Data:     parsed2,
 	}
 	parsedJson, err := json.MarshalIndent(fileContent, "", "\t")
 	if err != nil {
 		return err
 	}
-
 	if *out == "-" {
 		if _, err := os.Stdout.Write(parsedJson); err != nil {
 			return err
@@ -722,13 +696,10 @@ func process() error {
 			return err
 		}
 	}
-
 	return nil
 }
-
 func main() {
 	flag.Parse()
-
 	if err := process(); err != nil {
 		log.Fatalln(err)
 	}
