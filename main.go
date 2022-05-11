@@ -11,7 +11,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/fatih/color"
+	"github.com/gookit/color"
 	"github.com/graphql-go/graphql/language/ast"
 	"github.com/graphql-go/graphql/language/kinds"
 	"github.com/graphql-go/graphql/language/parser"
@@ -402,7 +402,6 @@ func plural(s string) string {
 	return out
 }
 func convert(nodes []ast.Node) ([]Node, error) {
-	warning := color.New(color.FgYellow)
 	onodes := make([]Node, 0, len(nodes))
 	for _, n := range nodes {
 		if v, ok := n.(*ast.TypeExtensionDefinition); ok {
@@ -532,7 +531,7 @@ func convert(nodes []ast.Node) ([]Node, error) {
 			}
 			for i, m := range o.Fields {
 				if strings.HasSuffix(m.Name.Value, "ID") {
-					warning.Printf("WARNING: Model '%s', Field '%s' ends with ID, use Id instead\n", o.Name.Value, m.Name.Value)
+					color.Yellow.Printf("WARNING: Model '%s', Field '%s' ends with ID, use Id instead\n", o.Name.Value, m.Name.Value)
 				}
 				m.NameExactJson = m.Name.Value
 				m.NameExact = snaker.ForceCamelIdentifier(m.NameExactJson)
