@@ -24,7 +24,6 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/jinzhu/inflection"
 	"github.com/kenshaw/snaker"
-	"github.com/s-you/go-tools/pkg/p"
 )
 
 var (
@@ -639,12 +638,12 @@ func parseField(v *ast.Field, frag map[string][]ast.Selection, colMap map[string
 										field := parseField(ssf1, frag, colMap, curType, path+"."+prevKey, varMap)
 										o.Fields = append(o.Fields, field)
 									default:
-										p.Println(ssf1)
+										fmt.Println(ssf1)
 									}
 								}
 							}
 						default:
-							p.Println(ssf)
+							fmt.Println(ssf)
 						}
 					}
 				}
