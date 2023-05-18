@@ -35,6 +35,7 @@ var (
 	removeComments = flag.Bool("remove-comments", false, "remove comments")
 	out            = flag.String("o", "", "output file")
 	debug          = flag.Bool("debug", false, "debug")
+	verbose        = flag.Bool("v", false, "verbose")
 	force          = flag.Bool("f", false, "force update")
 	changedFlag    = flag.Bool("changed", false, "exit code 2 if changed")
 	gqlgen         = flag.Bool("gqlgen", false, "use gqlgen case")
@@ -172,9 +173,11 @@ type FieldDefinition struct {
 	NamesDb       string                  `json:"namesDb"`
 	NameExact     string                  `json:"NameExact"`
 	NameExactJson string                  `json:"nameExact"`
+	NameCamel     string                  `json:"NameCamel"`
 	NameOrig      string                  `json:"nameOrig"`
 	Description   *StringValue            `json:"-"`
 	Type          MyType                  `json:"-"`
+	Alias         string                  `json:"alias"`
 	SrcType       string                  `json:"srcType"`
 	SrcTypeX      string                  `json:"srcTypeX"`
 	GoType        *MyTypeImpl             `json:"Type,omitempty"`
@@ -383,6 +386,7 @@ type EnumValueDefinition struct {
 	GoName        string      `json:"Name"`
 	NameJson      string      `json:"nameJson"`
 	Key           string      `json:"key"`
+	GoVarName     string      `json:"name"`
 	NameExactJson string      `json:"nameExact"`
 	NameOrig      string      `json:"nameOrig"`
 	GoType        *MyTypeImpl `json:"Type"`
@@ -532,6 +536,9 @@ func parseField(v *ast.Field, frag map[string][]ast.Selection, colMap map[string
 	o := &FieldDefinition{
 		Kind: v.Kind,
 	}
+	if v.Alias != nil {
+		o.Alias = v.Alias.Value
+	}
 	o.NameOrig = v.Name.Value
 	o.NameExact = snaker.ForceCamelIdentifier(v.Name.Value)
 	o.NameExactJson = lowerCamel(v.Name.Value)
@@ -539,6 +546,7 @@ func parseField(v *ast.Field, frag map[string][]ast.Selection, colMap map[string
 	o.NameJson = lowerCamel(inflection.Singular(v.Name.Value))
 	o.NameDb = snaker.CamelToSnake(inflection.Singular(o.GoName))
 	o.NameExactDb = snaker.CamelToSnake(v.Name.Value)
+	o.NameCamel = strcase.ToCamel(o.NameExactDb)
 	o.NamesDb = plural(o.NameDb)
 	o.GoVarName = lowerCamel(inflection.Singular(o.GoName))
 	if strings.HasSuffix(o.GoVarName, "IDS") {
@@ -791,6 +799,7 @@ func convert(nodes []ast.Node, frag map[string][]ast.Selection) ([]Node, error) 
 				x.NameExactJson = vv.Name.Value
 				x.NameJson = strcase.ToCamel(strcase.ToSnake(x.NameExactJson))
 				x.GoName = ToGo(x.NameJson)
+				x.GoVarName = lowerCamel(x.NameJson)
 				x.Key = x.NameExactJson
 				o.Values[i] = x
 				x.MyDirectives = make(MyDirective, len(vv.Directives))
@@ -1345,7 +1354,7 @@ func process() error {
 				}
 			}
 			if inTime > 0 && inTime <= outTime {
-				if *debug {
+				if *debug || *verbose {
 					log.Println("skip since no file has changed or use -f")
 				}
 				return nil
@@ -1366,7 +1375,8 @@ func process() error {
 		}
 		node, err := parseSchema(b)
 		if err != nil {
-			return err
+			fmt.Printf("failed to parse file: %s, err: %v\n", f, err)
+			return fmt.Errorf("failed to parse file (%s): %w", f, err)
 		}
 		nodes = append(nodes, node.Definitions...)
 	}
