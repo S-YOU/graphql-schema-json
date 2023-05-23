@@ -817,7 +817,7 @@ func convert(nodes []ast.Node, frag map[string][]ast.Selection) ([]Node, error) 
 		case *ast.InputObjectDefinition:
 			o := &InputObjectDefinition{}
 			o.Kind = v.Kind
-			o.Key = snaker.ForceCamelIdentifier(v.Name.Value)
+			o.Key = deInitialism(snaker.ForceCamelIdentifier(v.Name.Value))
 			o.NameInput = v.Name.Value
 			o.GoName = strings.TrimPrefix(v.Name.Value, "Input")
 			o.NameExact = v.Name.Value
@@ -844,7 +844,7 @@ func convert(nodes []ast.Node, frag map[string][]ast.Selection) ([]Node, error) 
 				m.NameExact = snaker.ForceCamelIdentifier(m.Name.Value)
 				m.NameJson = lowerCamel(inflection.Singular(m.Name.Value))
 				m.NameExactJson = lowerCamel(m.Name.Value)
-				m.Key = m.NameJson
+				m.Key = deInitialism(m.NameJson)
 				m.GoName = snaker.ForceCamelIdentifier(m.NameJson)
 				m.NameDb = snaker.CamelToSnake(inflection.Singular(m.GoName))
 				m.NameExactDb = snaker.CamelToSnake(m.Name.Value)
@@ -878,7 +878,7 @@ func convert(nodes []ast.Node, frag map[string][]ast.Selection) ([]Node, error) 
 			onodes = append(onodes, o)
 		case *ast.OperationDefinition:
 			o := &OperationDefinition{Kind: v.Kind}
-			o.Key = snaker.ForceCamelIdentifier(v.Name.Value)
+			o.Key = deInitialism(snaker.ForceCamelIdentifier(v.Name.Value))
 			o.GoName = v.Name.Value
 			o.Operation = v.Operation
 			o.OperationName = strings.Title(v.Operation)
@@ -1056,7 +1056,7 @@ func convert(nodes []ast.Node, frag map[string][]ast.Selection) ([]Node, error) 
 			onodes = append(onodes, o)
 		case *ast.ObjectDefinition:
 			o := &ObjectDefinition{Kind: v.Kind}
-			o.Key = snaker.ForceCamelIdentifier(v.Name.Value)
+			o.Key = deInitialism(snaker.ForceCamelIdentifier(v.Name.Value))
 			o.GoName = v.Name.Value
 			o.NameOrig = v.Name.Value
 			o.NameExact = v.Name.Value
@@ -1162,6 +1162,7 @@ func parseFieldDefinition(m *FieldDefinition, o *ObjectDefinition, fd *ast.Field
 	} else {
 		m.Key = m.NameExactJson
 	}
+	m.Key = deInitialism(m.Key)
 	m.MyDirectives = make(MyDirective, len(fd.Directives))
 	parseDirectives(&m.MyDirectives, fd.Directives, fdName)
 	if m.Key == "id" {

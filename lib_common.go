@@ -48,12 +48,34 @@ var commonInitialisms = map[string]string{
 	"Xss":   "XSS",
 }
 
+var commonInitialismsRev = func() map[string]string {
+	ret := make(map[string]string, len(commonInitialisms))
+	for k, v := range commonInitialisms {
+		ret[v] = k
+	}
+	return ret
+}()
+
 func ToGo(s string) string {
 	for i := 5; i >= 2; i-- {
 		l := len(s)
 		if l >= i {
 			if y := commonInitialisms[s[l-i:]]; y != "" {
 				s = s[:l-i] + y
+				return s
+			}
+		}
+	}
+	return s
+}
+
+func deInitialism(s string) string {
+	for i := 5; i >= 2; i-- {
+		l := len(s)
+		if l >= i {
+			if y := commonInitialismsRev[s[l-i:]]; y != "" {
+				s = s[:l-i] + y
+				return s
 			}
 		}
 	}
